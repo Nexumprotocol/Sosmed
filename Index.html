@@ -620,6 +620,798 @@ renderPosts();
 <!-- ============================================================
      BATCH 2 PASTE ZONE — ADD NEW POSTS BELOW THIS COMMENT
      Just paste the next <script> block here and it auto-adds
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SolBomb — Social Media Post Vault</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3d;
+    --accent: #f5a623;
+    --accent2: #ff4d6d;
+    --green: #00e5a0;
+    --purple: #9b5de5;
+    --blue: #00b4d8;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    background: linear-gradient(180deg, #0f0f1e 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    background: linear-gradient(135deg, #f5a623, #ff4d6d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 480px;
+    margin: 0 auto 24px;
+  }
+
+  .batch-badge {
+    display: inline-block;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    border-radius: 100px;
+  }
+
+  /* TABS */
+  .tabs-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    max-width: 900px;
+    margin: 0 auto;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 12px 0;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn:hover { border-color: var(--accent); color: var(--text); }
+
+  .tab-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
+
+  .tab-btn .count {
+    background: rgba(0,0,0,0.2);
+    border-radius: 100px;
+    padding: 1px 7px;
+    font-size: 11px;
+  }
+
+  .tab-btn.active .count { background: rgba(0,0,0,0.25); }
+
+  /* STATS BAR */
+  .stats-bar {
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  .category-section { display: none; }
+  .category-section.active { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0 20px;
+  }
+
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .section-title { font-size: 18px; font-weight: 700; }
+  .section-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* POST CARD */
+  .posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .post-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+
+  .post-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 0;
+  }
+
+  .post-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 6px;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+  }
+
+  .tag-twitter { background: rgba(29,161,242,0.15); color: #1da1f2; }
+  .tag-tg { background: rgba(0,136,204,0.15); color: #0088cc; }
+  .tag-all { background: rgba(245,166,35,0.15); color: var(--accent); }
+
+  .post-content {
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text);
+    white-space: pre-wrap;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .post-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .char-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .copy-btn {
+    padding: 6px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .copy-btn:hover { background: var(--accent); border-color: var(--accent); color: #000; }
+  .copy-btn.copied { background: var(--green); border-color: var(--green); color: #000; }
+
+  /* FOOTER */
+  .page-footer {
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .batch-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">💣 SolBomb</div>
+  <h1>Social Media Post Vault</h1>
+  <p>Ready-to-post content for every platform. Click copy, paste, post. Done.</p>
+  <div class="batch-badge">BATCH 1 OF 5 — 100 POSTS</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrapper">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('hype')">🔥 Hype <span class="count" id="count-hype">20</span></button>
+    <button class="tab-btn" onclick="switchTab('educational')">📚 Educational <span class="count" id="count-educational">20</span></button>
+    <button class="tab-btn" onclick="switchTab('meme')">😂 Meme <span class="count" id="count-meme">20</span></button>
+    <button class="tab-btn" onclick="switchTab('cta')">🎯 CTA <span class="count" id="count-cta">20</span></button>
+    <button class="tab-btn" onclick="switchTab('community')">🤝 Community <span class="count" id="count-community">20</span></button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" id="total-count">100</div><div class="stat-label">Total Posts</div></div>
+  <div class="stat"><div class="stat-num">5</div><div class="stat-label">Categories</div></div>
+  <div class="stat"><div class="stat-num" id="copied-count">0</div><div class="stat-label">Copied</div></div>
+  <div class="stat"><div class="stat-num">Batch 1</div><div class="stat-label">of 5</div></div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ==================== HYPE ==================== -->
+  <div class="category-section active" id="section-hype">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,166,35,0.1);">🔥</div>
+      <div>
+        <div class="section-title">Hype Posts</div>
+        <div class="section-desc">High-energy posts to build excitement and FOMO</div>
+      </div>
+    </div>
+    <div class="posts-grid" id="grid-hype"></div>
+  </div>
+
+  <!-- ==================== EDUCATIONAL ==================== -->
+  <div class="category-section" id="section-educational">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,180,216,0.1);">📚</div>
+      <div>
+        <div class="section-title">Educational Posts</div>
+        <div class="section-desc">Teach, explain, and build credibility</div>
+      </div>
+    </div>
+    <div class="posts-grid" id="grid-educational"></div>
+  </div>
+
+  <!-- ==================== MEME ==================== -->
+  <div class="category-section" id="section-meme">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(255,77,109,0.1);">😂</div>
+      <div>
+        <div class="section-title">Meme Posts</div>
+        <div class="section-desc">Viral-ready crypto humor that spreads</div>
+      </div>
+    </div>
+    <div class="posts-grid" id="grid-meme"></div>
+  </div>
+
+  <!-- ==================== CTA ==================== -->
+  <div class="category-section" id="section-cta">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(155,93,229,0.1);">🎯</div>
+      <div>
+        <div class="section-title">CTA Posts</div>
+        <div class="section-desc">Drive clicks, signups, and conversions</div>
+      </div>
+    </div>
+    <div class="posts-grid" id="grid-cta"></div>
+  </div>
+
+  <!-- ==================== COMMUNITY ==================== -->
+  <div class="category-section" id="section-community">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,229,160,0.1);">🤝</div>
+      <div>
+        <div class="section-title">Community Posts</div>
+        <div class="section-desc">Engage, celebrate, and grow the tribe</div>
+      </div>
+    </div>
+    <div class="posts-grid" id="grid-community"></div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <div>SolBomb Post Vault — Built for the community 💣</div>
+  <div class="batch-info">
+    <div class="dot"></div>
+    Batch 1 complete · Paste next batch below this line to add more posts
+  </div>
+</div>
+
+<script>
+// ============================================================
+// POSTS DATA — BATCH 1
+// ============================================================
+const POSTS = {
+  hype: [
+    { id: 'H001', tags: ['all'], text: `💣 SolBomb is live on Solana devnet.\n\nThis isn't just another launchpad.\nThis is the BOMB.\n\nFair launches. Bonding curves. No BS.\n\nThe era of rugs is over. The era of SolBomb has begun.\n\n#SolBomb #Solana #Crypto` },
+    { id: 'H002', tags: ['twitter'], text: `Imagine launching a token in 60 seconds.\nNo presale drama. No insider allocation.\nJust pure bonding curve math doing its job.\n\nThat's @SolBombXYZ 💣\n\nEarly is early. Don't say you weren't here.\n\n#SolBomb #Solana` },
+    { id: 'H003', tags: ['twitter'], text: `The next 100x on Solana won't be found on CoinGecko first.\n\nIt'll be launched on SolBomb. 💣\n\nFair. Fast. Decentralized.\nNo team allocation. No hidden wallets.\n\nThis is how it was always supposed to be.\n\n#SolBomb #Solana #DeFi` },
+    { id: 'H004', tags: ['all'], text: `SolBomb Founder Pass — only 100 exist.\n\nOwn a piece of SolBomb history.\nLimited to 100 founding supporters.\nUnlock milestone rewards as the ecosystem grows. 🚀\n\nOnce they're gone, they're gone forever.\n\n#SolBomb #NFT #Solana` },
+    { id: 'H005', tags: ['twitter'], text: `pump.fun had its run.\n\nNow meet the next evolution.\n\nSolBomb 💣 — built different:\n✅ x*y=k bonding curve\n✅ Instant liquidity\n✅ No rugs, no BS\n✅ 100% fair launch\n\nSolana's launchpad just leveled up.\n\n#SolBomb #Solana` },
+    { id: 'H006', tags: ['tg'], text: `👀 If you're still sleeping on SolBomb...\n\nLet me wake you up:\n\n💣 Memecoin launchpad on Solana\n💣 Constant product bonding curve\n💣 Fair launch — ZERO insider advantage\n💣 Founder Pass NFT (only 100 ever)\n\nThis is the one. Join before it blows up.\n\nsolbomb.xyz` },
+    { id: 'H007', tags: ['twitter'], text: `Everyone's launching tokens.\nBut not everyone launches FAIR.\n\nSolBomb uses x*y=k — the same math that powers the biggest DEXs in crypto.\n\nApplied to memecoins. On Solana. 💣\n\nThis changes everything.\n\n#SolBomb #Solana #DeFi #Memecoin` },
+    { id: 'H008', tags: ['all'], text: `The question isn't IF SolBomb will blow up.\n\nThe question is: will you be early?\n\n💣 100 Founder Passes\n💣 Fair launch protocol\n💣 Solana speed + low fees\n💣 Built by degens, for degens\n\nEarly > Right. Always.\n\n#SolBomb #Solana` },
+    { id: 'H009', tags: ['twitter'], text: `I've been in crypto long enough to know what early looks like.\n\nSolBomb looks early. 💣\n\n— Solana native\n— Bonding curve launchpad\n— 100 Founder Pass NFTs\n— Community-first protocol\n\nMark this tweet. See you on the other side.\n\n#SolBomb` },
+    { id: 'H010', tags: ['all'], text: `SolBomb presale is LIVE. 🚨\n\nDon't be the person who sees this thread in 6 months and says "I knew about it."\n\nBe the person who acted.\n\nsolbombpresale.netlify.app 💣\n\n#SolBomb #Solana #Presale` },
+    { id: 'H011', tags: ['twitter'], text: `Solana is the fastest L1 alive.\nSolBomb is the fastest way to launch fair tokens on it.\n\n💣 Sub-second finality\n💣 Near-zero gas fees\n💣 Instant bonding curve deployment\n\nSpeed + fairness = SolBomb\n\n#Solana #SolBomb #DeFi` },
+    { id: 'H012', tags: ['tg'], text: `🔥 Why SolBomb is different from EVERY other launchpad:\n\nOther launchpads:\n❌ Team gets 10-20% allocation\n❌ VCs buy before you\n❌ Presale dumps on launch\n\nSolBomb:\n✅ Zero team token advantage\n✅ Bonding curve = price rises as you buy\n✅ No dump possible at launch\n\nFair game. Finally.\n\nsolbomb.xyz` },
+    { id: 'H013', tags: ['twitter'], text: `The memecoin meta on Solana is evolving.\n\nPhase 1: Random rugs\nPhase 2: pump.fun era\nPhase 3: SolBomb 💣\n\nFair. Structured. Community-owned.\n\nWe're entering Phase 3 right now.\n\n#SolBomb #Solana #Memecoin` },
+    { id: 'H014', tags: ['all'], text: `Not financial advice.\n\nBut if I were looking for the next narrative on Solana, I'd be looking at:\n\n💣 Fair launch protocols\n💣 Community-driven memecoins\n💣 Transparent bonding curves\n\nSolBomb is all three in one.\n\n#DYOR #SolBomb #Solana` },
+    { id: 'H015', tags: ['twitter'], text: `When SolBomb hits mainnet:\n\n• Fair token launches become the norm\n• Rug pulls become the exception\n• Communities win, not insiders\n\nThis is the protocol that changes how Solana launches work.\n\n💣 solbomb.xyz\n\n#SolBomb #Solana` },
+    { id: 'H016', tags: ['tg'], text: `🚀 SolBomb Update:\n\nWe're building in public. We're launching fair. We're building for YOU.\n\nFounder Pass NFT — 100 spots only.\nGet in before the bomb drops.\n\n🔗 solbombpresale.netlify.app\n\nShare this with your degen frens 💣` },
+    { id: 'H017', tags: ['twitter'], text: `I've seen hundreds of launches.\nMost pump, dump, and disappear.\n\nSolBomb is built so that CAN'T happen.\n\nThe bonding curve mathematically prevents it.\n\nBuilt different. 💣\n\n#SolBomb #Solana #DeFi` },
+    { id: 'H018', tags: ['all'], text: `If you missed:\n• Early Solana\n• Early pump.fun\n• Early Raydium\n\nDon't miss SolBomb. 💣\n\nThe fair launchpad era on Solana is just beginning.\n\n#SolBomb #Solana #Crypto #FOMO` },
+    { id: 'H019', tags: ['twitter'], text: `SolBomb is to memecoins what Uniswap was to token swaps.\n\nA fundamental improvement in how things work.\n\nFair. Trustless. Automatic.\n\n💣 The bomb is ticking.\n\n#SolBomb #DeFi #Solana` },
+    { id: 'H020', tags: ['all'], text: `Most people discover alpha after it's already priced in.\n\nYou're reading this BEFORE SolBomb goes mainstream.\n\nDo something with that information. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #Alpha` },
+  ],
+
+  educational: [
+    { id: 'E001', tags: ['all'], text: `What is SolBomb? 🧵\n\nSolBomb is a fair memecoin launchpad on Solana.\n\nInstead of presales where insiders get advantages, SolBomb uses a bonding curve — a mathematical formula that automatically prices tokens based on supply and demand.\n\nNo teams taking early bags. Ever.\n\n#SolBomb #Solana #DeFi` },
+    { id: 'E002', tags: ['twitter'], text: `Let me explain bonding curves in 30 seconds 👇\n\nFormula: x * y = k\n\n• x = token supply in pool\n• y = SOL in pool\n• k = constant (never changes)\n\nWhen you BUY → x goes down, y goes up → price rises\nWhen you SELL → x goes up, y goes down → price falls\n\nAutomatic. Fair. Transparent.\n\nThat's SolBomb. 💣` },
+    { id: 'E003', tags: ['all'], text: `Why do most memecoin launches fail? 📉\n\nBecause:\n1. Team holds 20%+ of supply\n2. VCs buy at 0.0001x valuation\n3. They dump on retail at launch\n\nSolBomb fixes this by removing the human greed factor.\n\nThe bonding curve IS the price mechanism. No human control.\n\n#SolBomb #DeFi #Solana` },
+    { id: 'E004', tags: ['tg'], text: `📚 SolBomb 101 — How it works:\n\n1️⃣ Creator deploys a token on SolBomb\n2️⃣ Bonding curve starts at a very low price\n3️⃣ Each buy increases the price automatically\n4️⃣ Each sell decreases the price automatically\n5️⃣ Price is 100% determined by market activity\n\nNo presale. No private round. No insider advantage.\n\nPure market mechanics. 💣` },
+    { id: 'E005', tags: ['twitter'], text: `What makes SolBomb different from pump.fun?\n\nBoth use bonding curves, but SolBomb:\n\n✅ Built on Anchor (Solana's most secure framework)\n✅ Full on-chain transparency\n✅ Founder Pass NFT for early supporters\n✅ Community-governed protocol\n\nEvolution, not imitation. 💣\n\n#SolBomb #Solana` },
+    { id: 'E006', tags: ['all'], text: `Why Solana for SolBomb? 🔍\n\n• 65,000+ transactions per second\n• Sub-second block times\n• Average tx fee: ~$0.001\n• Largest memecoin ecosystem in crypto\n\nSolana is the only chain where a memecoin launchpad makes economic sense.\n\nSolBomb is built where the action is. 💣\n\n#Solana #SolBomb` },
+    { id: 'E007', tags: ['twitter'], text: `Thread: Why constant product AMMs (x*y=k) are brilliant for memecoins 🧵\n\n1/ Traditional presales: Fixed price, all risk on retail\n2/ AMMs: Dynamic price, risk distributed across all participants\n3/ Bonding curves: Same math, applied at token creation\n\nSolBomb uses bonding curves from day 1.\n\nThis is how fair launches should work. 💣` },
+    { id: 'E008', tags: ['tg'], text: `🎓 Understanding the SolBomb Founder Pass NFT:\n\n• Only 100 will ever exist\n• Earns milestone rewards as ecosystem grows\n• Proof of being a founding supporter\n• Not just a JPEG — it's protocol equity\n\nEarly communities that support protocols before mainnet are usually rewarded the most.\n\nHistory repeats.\n\nsolbombpresale.netlify.app` },
+    { id: 'E009', tags: ['twitter'], text: `How does liquidity work on SolBomb? 💧\n\nWhen a token reaches its market cap target:\n→ Liquidity is automatically added to a DEX\n→ The bonding curve closes\n→ Token trades freely on open market\n\nNo team controls the liquidity.\nNo LP tokens to pull.\n\nTrustless by design. 💣\n\n#SolBomb #DeFi` },
+    { id: 'E010', tags: ['all'], text: `Rug pulls happen because:\n\n1. Team controls liquidity\n2. Team holds large % of supply\n3. No mechanism prevents selling\n\nSolBomb eliminates all three vectors:\n\n✅ Protocol controls liquidity\n✅ Zero insider allocation\n✅ Bonding curve creates organic sell pressure distribution\n\n#SolBomb #Solana #DeFi` },
+    { id: 'E011', tags: ['twitter'], text: `What is a "fair launch" really? 🤔\n\nTrue fair launch = everyone pays the same price curve.\n\nNo presale discounts.\nNo team allocation.\nNo whitelist advantage.\n\nYou buy at price X, next person buys at price X+delta.\n\nThat's the bonding curve.\nThat's SolBomb.\n\n💣 #SolBomb #Solana` },
+    { id: 'E012', tags: ['tg'], text: `📖 SolBomb Protocol Architecture:\n\nBuilt with Anchor framework on Solana.\n\n• Smart contract handles all pricing\n• PDA accounts secure every token's liquidity\n• No admin keys can drain funds\n• Fully auditable on-chain\n\nThis isn't a website that "sort of" works on blockchain.\n\nThis is native Solana, built right. 💣` },
+    { id: 'E013', tags: ['twitter'], text: `The math behind why early buyers on bonding curves do well:\n\nAt start: x*y = k, say 1B * 0.001 SOL = 1M (k)\nAt 50% bought: 500M * 0.002 SOL = same k\nAt 90% bought: 100M * 0.01 SOL = same k\n\nEarly buyers at 0.001 SOL per token.\nLate buyers at 0.01 SOL per token.\n\n10x difference. Be early. 💣\n\n#SolBomb #DeFi` },
+    { id: 'E014', tags: ['all'], text: `Why community-owned launchpads win long-term:\n\n• No misaligned incentives between team and users\n• Protocol upgrades voted on by token holders\n• Revenue flows back to community\n• Reputation built on transparency\n\nSolBomb is building this from day 1.\n\n💣 #SolBomb #DAO #Solana` },
+    { id: 'E015', tags: ['twitter'], text: `SolBomb fee structure explained:\n\nSmall % fee on each transaction → goes to:\n• Protocol treasury\n• Founder Pass NFT holders\n• Future community rewards\n\nThe more the platform is used, the more everyone earns.\n\nAligned incentives. 💣\n\n#SolBomb #DeFi #Tokenomics` },
+    { id: 'E016', tags: ['tg'], text: `🔍 How to evaluate if a launchpad is legit:\n\n✅ Open source smart contracts\n✅ On-chain price mechanism (not manual)\n✅ No team token allocation\n✅ Clear fee structure\n✅ Active community\n\nSolBomb checks all 5.\n\nDo your research. Then join us. 💣\n\nsolbomb.xyz` },
+    { id: 'E017', tags: ['twitter'], text: `Solana memecoin stats (2024-2025):\n\n• Billions in volume monthly\n• Thousands of new tokens daily\n• Most retail-friendly chain\n\nSolBomb is building infrastructure for this ecosystem.\n\nNot chasing a trend — serving a real, massive market.\n\n💣 #SolBomb #Solana #Memecoin` },
+    { id: 'E018', tags: ['all'], text: `The difference between a casino and a fair market:\n\nCasino: House always wins\nFair market: Rules apply equally to everyone\n\nMost crypto launches are casinos.\nSolBomb is a fair market.\n\nBonding curves remove the house advantage.\n\n💣 #SolBomb #DeFi` },
+    { id: 'E019', tags: ['twitter'], text: `What happens after a token "graduates" from SolBomb?\n\n1. Bonding curve hits target market cap\n2. Liquidity automatically migrates to DEX\n3. Token listed for free trading\n4. Community controls the narrative\n\nSolBomb does the hard part.\nCommunity takes it from there.\n\n💣 #SolBomb #Solana` },
+    { id: 'E020', tags: ['tg'], text: `📚 Key terms every SolBomber should know:\n\n💣 Bonding Curve — automatic pricing formula\n💣 PDA — Program Derived Account (secure vault)\n💣 AMM — Automated Market Maker\n💣 Founder Pass — limited NFT for early supporters\n💣 Fair Launch — equal access for all\n\nLearn these. Use them. Own them.\n\nsolbomb.xyz` },
+  ],
+
+  meme: [
+    { id: 'M001', tags: ['twitter'], text: `me: i should save money and not ape into random tokens\n\nalso me when i found SolBomb: 💣💣💣\n\n#SolBomb #Solana #CryptoTwitter` },
+    { id: 'M002', tags: ['all'], text: `[Token launch on regular launchpad]\n\nInsiders: already 20x\nTeam: selling\nYou: buying the top\n\n[Token launch on SolBomb]\n\nEveryone: same starting line\nBonding curve: doing the math\nYou: actually early for once\n\n💣 #SolBomb` },
+    { id: 'M003', tags: ['twitter'], text: `Crypto Twitter in 2021: "I'm a long-term investor"\n\nCrypto Twitter in 2025 seeing SolBomb: "okay but what's the CA"\n\n💣 same as it ever was\n\n#SolBomb #Solana #CryptoMemes` },
+    { id: 'M004', tags: ['all'], text: `Financial advisors: "diversify your portfolio"\n\nMe: 12 memecoins and a SolBomb Founder Pass\n\n"I am diversified" 💣\n\n#SolBomb #NotFinancialAdvice #Solana` },
+    { id: 'M005', tags: ['twitter'], text: `The five stages of crypto grief:\n\n1. Denial — "it'll bounce"\n2. Anger — "who tf sold"\n3. Bargaining — "if it goes back to ATH i'll sell"\n4. Depression — "this is over"\n5. Acceptance — "at least I have SolBomb" 💣\n\n#SolBomb #Solana #CryptoMemes` },
+    { id: 'M006', tags: ['tg'], text: `Normal person: I research projects for weeks before investing\n\nMe at 3am: bonding curve go brrr 💣\n\nSolBomb season. We don't sleep.\n\nsolbomb.xyz` },
+    { id: 'M007', tags: ['twitter'], text: `rug puller: we have a fair launch! only team gets 50% of supply\n\nactual fair launch: *bonding curve exists*\n\nSolBomb: 💣 yeah that's us\n\n#SolBomb #DeFi #CryptoMemes` },
+    { id: 'M008', tags: ['all'], text: `My portfolio in January: 📈\nMy portfolio in March: 📉\nMy portfolio after finding SolBomb: 🤷‍♂️ at least I'm early\n\n💣 #SolBomb #WAGMI #Solana` },
+    { id: 'M009', tags: ['twitter'], text: `Nobody:\n\nAbsolutely nobody:\n\nSolBomb bonding curve at 3am: x * y = k, and I am untouchable 💣\n\n#SolBomb #Solana #CryptoTwitter` },
+    { id: 'M010', tags: ['tg'], text: `Stages of being a SolBomber:\n\n1. "What is a bonding curve?"\n2. "Oh this is actually smart"\n3. "Why isn't everyone using this?"\n4. "I'm telling everyone I know"\n5. *Gets Founder Pass NFT*\n\nWhich stage are you? 💣` },
+    { id: 'M011', tags: ['twitter'], text: `Sir this is a Wendy's\n\n"I'll take a x*y=k bonding curve on Solana with extra fair launch please"\n\nSolBomb employee: 💣 coming right up\n\n#SolBomb #Solana #CryptoMemes` },
+    { id: 'M012', tags: ['all'], text: `If loving SolBomb is wrong, I don't want to be right 💣\n\n(also the math is undefeated)\n\n#SolBomb #Solana #DeFi` },
+    { id: 'M013', tags: ['twitter'], text: `Interviewer: What's your greatest weakness?\n\nMe: I can't stop refreshing SolBomb whenever a new token launches\n\nInterviewer: The job is yours\nInterviewer: Also what's the CA 💣\n\n#SolBomb #Solana` },
+    { id: 'M014', tags: ['tg'], text: `My therapist: What's been on your mind lately?\n\nMe: Have you heard about bonding curves on Solana?\n\nTherapist: *pulls out laptop*\n\nMe: Let me explain SolBomb 💣\n\nsolbomb.xyz` },
+    { id: 'M015', tags: ['twitter'], text: `2022: "I only invest in fundamentals"\n2023: "I believe in the technology"\n2024: "Just a small bag"\n2025: SOLBOMB FOUNDER PASS LETS GOOOOO 💣\n\nwe all have a journey\n\n#SolBomb #Solana #CryptoMemes` },
+    { id: 'M016', tags: ['all'], text: `Signs you've been in crypto too long:\n\n✅ You explain bonding curves at dinner\n✅ You check SOL price before bed\n✅ You own a SolBomb Founder Pass\n✅ You say "ser" unironically\n\nGuilty on all counts 💣\n\n#SolBomb #Solana #CryptoLife` },
+    { id: 'M017', tags: ['twitter'], text: `VC: We'd like to offer you a pre-seed valuation of—\n\nSolBomb: *bonding curve has entered the chat*\n\nVC: wait this doesn't need us\n\nSolBomb: correct. fair launch. 💣 bye\n\n#SolBomb #DeFi #CryptoMemes` },
+    { id: 'M018', tags: ['tg'], text: `"I'm going to be responsible with my crypto this cycle"\n\nSolBomb Founder Pass: only 100 exist 👀\n\nMe: okay but just this one thing\n\n💣 I have no regrets` },
+    { id: 'M019', tags: ['twitter'], text: `My honest reaction when I first saw SolBomb's bonding curve:\n\n"This is the most elegant thing I've ever seen in crypto."\n\nthen immediately: "but can it go 1000x tho" 💣\n\n#SolBomb #Solana #Degen` },
+    { id: 'M020', tags: ['all'], text: `Things I trust:\n\n✅ The laws of mathematics\n✅ x * y = k on Solana\n✅ SolBomb bonding curves\n✅ Nothing else\n\n💣 #SolBomb #Solana #Math` },
+  ],
+
+  cta: [
+    { id: 'C001', tags: ['all'], text: `The SolBomb presale is open.\n\n100 Founder Passes.\n100 founding supporters.\nUnlimited upside.\n\nLink in bio 👆\n\n💣 solbombpresale.netlify.app\n\n#SolBomb #Solana #Presale` },
+    { id: 'C002', tags: ['twitter'], text: `Before you scroll past:\n\n→ SolBomb is a fair memecoin launchpad on Solana\n→ Founder Pass NFT: only 100 supply\n→ Presale is LIVE right now\n\nYou've been warned.\n\n💣 solbombpresale.netlify.app\n\n#SolBomb #Solana` },
+    { id: 'C003', tags: ['tg'], text: `⚠️ ACTION REQUIRED ⚠️\n\nIf you believe in:\n✅ Fair launches\n✅ Solana ecosystem\n✅ Being early\n\nYou need to look at SolBomb right now.\n\n🔗 solbombpresale.netlify.app\n\nFounder Passes are limited. Don't miss it. 💣` },
+    { id: 'C004', tags: ['twitter'], text: `Tag someone who needs to see SolBomb before it's too late 👇\n\n💣 Fair launch memecoin launchpad on Solana\n💣 Founder Pass NFT — 100 max supply\n💣 Presale live now\n\nsolbombpresale.netlify.app\n\n#SolBomb #Solana #Crypto` },
+    { id: 'C005', tags: ['all'], text: `One link. One decision. One opportunity.\n\n💣 solbombpresale.netlify.app\n\nFounder Pass NFT — own a piece of SolBomb history.\nLimited to 100. Forever.\n\nClick. Now. 🚀\n\n#SolBomb #Solana #NFT` },
+    { id: 'C006', tags: ['tg'], text: `📣 SHARE THIS WITH YOUR DEGEN GROUP:\n\nSolBomb is building the fair launch standard on Solana.\n\n🔥 Presale: solbombpresale.netlify.app\n🌐 Website: solbomb.xyz\n📄 Whitepaper: solbombwhitepaper.netlify.app\n\n100 Founder Passes. That's it. Ever.\n\nTag everyone. 💣` },
+    { id: 'C007', tags: ['twitter'], text: `If you've been waiting for the right moment to get into a Solana project early...\n\nThis is the moment. ⬇️\n\n💣 SolBomb — Fair memecoin launchpad\n🎫 Founder Pass NFT — 100 supply\n🚀 Presale: solbombpresale.netlify.app\n\nDon't wait. Act.\n\n#SolBomb #Solana` },
+    { id: 'C008', tags: ['all'], text: `Save this post.\n\nIn 6 months when SolBomb is mainstream, you'll want to remember you saw it here first.\n\nOr better yet — join now instead of just saving it.\n\n💣 solbombpresale.netlify.app\n\n#SolBomb #Solana #DYOR` },
+    { id: 'C009', tags: ['twitter'], text: `Real talk: how many projects have you seen where you thought "I wish I was earlier"?\n\nSolBomb is that project.\nRight now.\nAt this very moment.\n\nDon't repeat the same mistake.\n\n💣 solbombpresale.netlify.app\n\n#SolBomb #Solana` },
+    { id: 'C010', tags: ['tg'], text: `The SolBomb Founder Pass:\n\n🏆 Only 100 exist — ever\n🚀 Milestone rewards as ecosystem grows\n💣 Permanent proof of being founding supporter\n\nOnce sold out, there is no second chance.\n\nGet yours: solbombpresale.netlify.app\n\nForward this. Someone needs to see it.` },
+    { id: 'C011', tags: ['twitter'], text: `3 reasons to check out SolBomb right now:\n\n1. Fair launch protocol on Solana\n2. Founder Pass NFT — 100 max supply\n3. Presale is live and spots are filling\n\n→ solbombpresale.netlify.app\n\n💣 That's it. That's the tweet.\n\n#SolBomb #Solana` },
+    { id: 'C012', tags: ['all'], text: `You either find alpha or you follow alpha.\n\nYou're finding it right now.\n\n💣 SolBomb presale: solbombpresale.netlify.app\n\nDon't let this be another "I knew about it" story.\n\n#SolBomb #Solana #Alpha` },
+    { id: 'C013', tags: ['tg'], text: `🎯 Your next 3 moves:\n\n1️⃣ Visit solbomb.xyz — understand the vision\n2️⃣ Read the whitepaper — understand the tech\n3️⃣ Join the presale — secure your Founder Pass\n\nEarly movers win. Always.\n\n💣 Don't overthink it.` },
+    { id: 'C014', tags: ['twitter'], text: `Retweet this if you want your followers to know about SolBomb before it blows up.\n\n💣 Fair launch launchpad on Solana\n💣 100 Founder Pass NFTs\n💣 Presale live now\n\nsolbombpresale.netlify.app\n\n#SolBomb #Solana #Crypto` },
+    { id: 'C015', tags: ['all'], text: `This is not a drill.\n\nSolBomb Founder Pass: 100 total supply.\nPresale: LIVE.\nYour move.\n\n💣 solbombpresale.netlify.app\n\n#SolBomb #Solana #NFT #Presale` },
+    { id: 'C016', tags: ['twitter'], text: `I don't usually shill things.\n\nBut SolBomb isn't a shill — it's a legitimate fair launch protocol on Solana that's been building properly.\n\nIf you want early access: solbombpresale.netlify.app\n\n💣 Do your own research. Then join.\n\n#SolBomb #DYOR #Solana` },
+    { id: 'C017', tags: ['tg'], text: `📌 PIN THIS:\n\nSolBomb Founder Pass — what you get:\n\n✅ 1 of 100 founding supporter NFTs\n✅ Milestone rewards as platform grows\n✅ Permanent on-chain proof of being early\n✅ Part of the inner circle forever\n\n🔗 solbombpresale.netlify.app\n\n💣 Act before it's gone.` },
+    { id: 'C018', tags: ['all'], text: `The window to be early in SolBomb is open.\n\nIt won't stay open forever.\n\nFounder Passes: 100 total.\nPresale: Live now.\nYour decision: Right now.\n\n💣 solbombpresale.netlify.app\n\n#SolBomb #Solana` },
+    { id: 'C019', tags: ['twitter'], text: `Follow @SolBombXYZ\nJoin the presale\nGrab a Founder Pass\nTell your friends\n\nThat's the entire playbook. 💣\n\nsolbombpresale.netlify.app\n\n#SolBomb #Solana #Crypto` },
+    { id: 'C020', tags: ['all'], text: `Last chance energy:\n\n• 100 Founder Passes total\n• Each one = founding supporter status forever\n• Presale is running RIGHT NOW\n\nBe the person who acted, not the person who watched.\n\n💣 solbombpresale.netlify.app\n\n#SolBomb #Solana` },
+  ],
+
+  community: [
+    { id: 'CM001', tags: ['all'], text: `The SolBomb community is growing every single day. 🌱\n\nPeople who believe in:\n✅ Fair launches\n✅ Community ownership\n✅ Solana's future\n\nAre finding their home here.\n\nWelcome to the family. 💣\n\n#SolBomb #Solana #Community` },
+    { id: 'CM002', tags: ['tg'], text: `🙏 To everyone who has joined the SolBomb journey so far:\n\nYou're not just early investors.\nYou're co-founders of a movement.\n\nFair launches. Community wins. No rugs.\n\nWe're building this together. 💣\n\nsolbomb.xyz` },
+    { id: 'CM003', tags: ['twitter'], text: `The best thing about the SolBomb community:\n\nWe all genuinely believe the same thing:\n→ Fair launches should be the standard\n→ Crypto should work for everyone\n→ Community > insiders. Always.\n\nThat's what binds us. 💣\n\n#SolBomb #Solana #Community` },
+    { id: 'CM004', tags: ['all'], text: `Drop a 💣 if you're part of the SolBomb community.\n\nLet's see how many of us there are.\n\nThe movement is bigger than you think.\n\n#SolBomb #Solana #Community` },
+    { id: 'CM005', tags: ['twitter'], text: `What does the SolBomb community stand for?\n\n💣 Fair access — no VIP presales for insiders\n💣 Transparency — everything on-chain\n💣 Community first — protocol serves users\n💣 Long term thinking — building, not flipping\n\nThis is who we are.\n\n#SolBomb #Solana` },
+    { id: 'CM006', tags: ['tg'], text: `Community question 👇\n\nWhat brought you to SolBomb?\n\nA) Tired of rug pulls\nB) Believe in fair launches\nC) Early Solana ecosystem supporter\nD) My degen friends told me\nE) All of the above\n\nReply below 💣` },
+    { id: 'CM007', tags: ['twitter'], text: `Real communities aren't built overnight.\n\nBut they're built exactly like this:\n→ Small group with shared values\n→ Product that actually solves a problem\n→ Early supporters who spread the word\n\nThat's SolBomb right now.\n\nYou're in the right place. 💣\n\n#SolBomb #Solana` },
+    { id: 'CM008', tags: ['all'], text: `To every person who shared SolBomb with a friend this week:\n\nYou're not just a user.\nYou're a builder.\n\nThank you. The movement grows because of you. 💣\n\n#SolBomb #Solana #Community #WAGMI` },
+    { id: 'CM009', tags: ['tg'], text: `💬 Let's talk wins.\n\nTag a friend who introduced you to Solana.\nTag a friend who should know about SolBomb.\n\nPaying it forward is what good communities do.\n\n💣 We build together.` },
+    { id: 'CM010', tags: ['twitter'], text: `The SolBomb Founder Pass is more than an NFT.\n\nIt's membership in a community that decided:\n"We're going to do this the right way."\n\nFair. Transparent. Community-first.\n\nProud to be building with you all. 💣\n\n#SolBomb #Solana #Community` },
+    { id: 'CM011', tags: ['all'], text: `Every great protocol started with a small community that believed.\n\nUniswap had its early LPs.\nSolana had its early validators.\nSolBomb has its Founder Pass holders.\n\nHistory is being written. 💣\n\n#SolBomb #Solana #Community` },
+    { id: 'CM012', tags: ['tg'], text: `🔥 Community Challenge:\n\nGet 3 people to visit solbomb.xyz this week.\n\nWhy? Because:\n✅ Fair launches need believers\n✅ The bigger the community, the stronger the protocol\n✅ You were early once. Pay it forward.\n\n💣 Let's grow together.` },
+    { id: 'CM013', tags: ['twitter'], text: `Something I love about the SolBomb community:\n\nWe're not here to get rich quick off each other.\nWe're here to build something that works for everyone.\n\nThat mentality is rare in crypto.\nThat's exactly why it works. 💣\n\n#SolBomb #Solana #Community` },
+    { id: 'CM014', tags: ['all'], text: `In crypto, your network is your net worth.\n\nThe people building SolBomb:\n✅ Builders, not bagholders\n✅ Long-term thinkers\n✅ Believers in fair systems\n\nJoin the right network. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana` },
+    { id: 'CM015', tags: ['twitter'], text: `Weekly reminder that you're early.\n\nThe SolBomb community is still small enough that:\n→ Your voice matters\n→ Your feedback shapes the protocol\n→ Your support is genuinely felt\n\nBig communities forget their early people.\nWe never will. 💣\n\n#SolBomb #Solana` },
+    { id: 'CM016', tags: ['tg'], text: `📢 Shoutout to everyone who:\n\n💣 Joined the SolBomb community early\n💣 Shared our posts without being asked\n💣 Explained bonding curves to confused friends\n💣 Believed in fair launches before it was cool\n\nYou are SolBomb. Not just the team.\n\nAll of us. 🙏` },
+    { id: 'CM017', tags: ['twitter'], text: `The best investment in crypto isn't a token.\n\nIt's finding the right community early.\n\nThe right community:\n→ Attracts builders\n→ Creates value\n→ Survives the bear\n\nSolBomb community. Right here. Right now. 💣\n\n#SolBomb #Solana #Community` },
+    { id: 'CM018', tags: ['all'], text: `GM to all SolBombers. 🌅\n\nAnother day of building.\nAnother day of believing.\nAnother day of being early.\n\nLet's make it count. 💣\n\n#SolBomb #Solana #GM #Community` },
+    { id: 'CM019', tags: ['tg'], text: `The people in this community are special.\n\nNot because we're all rich (yet 😅).\n\nBut because we all chose the same thing:\n\n→ Fair > fast\n→ Community > insiders\n→ Long term > quick flip\n\nThat's rare. That's powerful. That's SolBomb. 💣` },
+    { id: 'CM020', tags: ['all'], text: `One year from now, the SolBomb community will look back at this moment.\n\n"We were there when it was 100 people."\n"We were the founding supporters."\n"We built this."\n\nYou'll want to be able to say that.\n\nJoin now. 💣 solbomb.xyz\n\n#SolBomb #Solana #Community` },
+  ]
+};
+
+// ============================================================
+// RENDER ENGINE — DO NOT MODIFY
+// ============================================================
+let copiedCount = 0;
+
+function renderPosts() {
+  const categories = Object.keys(POSTS);
+  categories.forEach(cat => {
+    const grid = document.getElementById('grid-' + cat);
+    if (!grid) return;
+    const posts = POSTS[cat];
+    // Update count badge
+    const countEl = document.getElementById('count-' + cat);
+    if (countEl) countEl.textContent = posts.length;
+    posts.forEach((post, i) => {
+      const charCount = post.text.length;
+      const tagHtml = post.tags.map(t => {
+        const cls = t === 'twitter' ? 'tag-twitter' : t === 'tg' ? 'tag-tg' : 'tag-all';
+        const label = t === 'twitter' ? '𝕏 Twitter' : t === 'tg' ? '✈️ Telegram' : '🌐 All';
+        return `<span class="tag ${cls}">${label}</span>`;
+      }).join('');
+      const card = document.createElement('div');
+      card.className = 'post-card';
+      card.innerHTML = `
+        <div class="post-meta">
+          <span class="post-num">#${post.id}</span>
+          <div class="post-tags">${tagHtml}</div>
+        </div>
+        <div class="post-content">${escapeHtml(post.text)}</div>
+        <div class="post-footer">
+          <span class="char-count">${charCount} chars</span>
+          <button class="copy-btn" onclick="copyPost(this, ${JSON.stringify(post.text).replace(/'/g, "&#39;")})">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>`;
+      grid.appendChild(card);
+    });
+  });
+  updateTotalCount();
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function copyPost(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    copiedCount++;
+    document.getElementById('copied-count').textContent = copiedCount;
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+    }, 2000);
+  });
+}
+
+function switchTab(cat) {
+  document.querySelectorAll('.category-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + cat).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function updateTotalCount() {
+  let total = 0;
+  Object.values(POSTS).forEach(arr => total += arr.length);
+  document.getElementById('total-count').textContent = total;
+}
+
+// INIT
+renderPosts();
+</script>
+
+<!-- ============================================================
+     BATCH 2 — 100 POSTS — HIGHER HYPE + LINKS INCLUDED
+     ============================================================ -->
+<script>
+const BATCH2 = {
+  hype: [
+    { id: 'H021', tags: ['twitter'], text: `SOLBOMB IS NOT ASKING FOR PERMISSION. 💣\n\nNo VCs. No insiders. No BS.\n\nJust pure bonding curve mathematics detonating on Solana.\n\nThe launchpad the ecosystem has been waiting for is HERE.\n\nsolbomb.xyz\n\n#SolBomb #Solana #DeFi` },
+    { id: 'H022', tags: ['all'], text: `I've seen a lot of projects promise "fair launch."\n\nMost lie.\n\nSolBomb doesn't need to promise it.\nThe smart contract ENFORCES it.\n\n💣 Math doesn't lie. Devs do. SolBomb removes the devs from the equation.\n\nsolbomb.xyz\n\n#SolBomb #Solana` },
+    { id: 'H023', tags: ['tg'], text: `🚨 WAKE UP CALL 🚨\n\nSolBomb is live.\nPresale is running.\nFounder Passes are being claimed.\n\nAnd you're still sleeping?\n\nGet up. Get in. Get early.\n\n👉 solbombpresale.netlify.app\n\n💣 The bomb doesn't wait for anyone.` },
+    { id: 'H024', tags: ['twitter'], text: `The Solana memecoin market is a $10B+ opportunity.\n\nSolBomb is the infrastructure layer for ALL of it.\n\nEvery fair launch. Every bonding curve. Every token.\nRouted through SolBomb. 💣\n\nThis is the protocol play of the cycle.\n\nsolbomb.xyz\n\n#SolBomb #Solana` },
+    { id: 'H025', tags: ['all'], text: `SOLBOMB THESIS:\n\n🎯 Solana is the memecoin chain\n🎯 Memecoins need fair launches\n🎯 Fair launches need bonding curves\n🎯 Bonding curves need SolBomb\n\nConclusion: SolBomb is inevitable. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #DeFi #Memecoin` },
+    { id: 'H026', tags: ['twitter'], text: `Every cycle has a defining protocol.\n\n2020: Uniswap\n2021: OpenSea\n2022: Blur\n2023: pump.fun\n2025: SolBomb 💣\n\nThe fair launch era is here.\nDon't be early to the wrong thing.\n\nsolbomb.xyz\n\n#SolBomb #Solana #Crypto` },
+    { id: 'H027', tags: ['tg'], text: `💥 SOLBOMB BETA TESTER PROGRAM IS OPEN 💥\n\nWe're selecting 100 early users to test the platform before public launch.\n\nThis is your shot to:\n✅ Use SolBomb before anyone else\n✅ Shape the protocol directly\n✅ Earn early supporter status forever\n\n👉 tally.so/r/D4W0pl\n\nFill it NOW. 💣` },
+    { id: 'H028', tags: ['twitter'], text: `SolBomb doesn't have a marketing budget.\n\nIt has something better:\n\nA product so good that people CAN'T stop talking about it. 💣\n\nFair launches. Bonding curves. Solana speed.\n\nWord of mouth > paid ads. Always.\n\nsolbomb.xyz\n\n#SolBomb #Solana` },
+    { id: 'H029', tags: ['all'], text: `The difference between missing and catching a crypto wave:\n\n⏱️ 30 seconds.\nThe time it takes to visit solbomb.xyz right now.\n\n💣 SolBomb presale is LIVE.\n100 Founder Passes.\nHistory is being made.\n\nsolbombpresale.netlify.app\n\n#SolBomb #Solana #Presale` },
+    { id: 'H030', tags: ['twitter'], text: `I said what I said:\n\nSolBomb is the most important launchpad built on Solana in 2025. 💣\n\nFair by design. Fast by nature. Unstoppable by math.\n\nChallenge me.\n\nsolbomb.xyz\n\n#SolBomb #Solana #HotTake` },
+    { id: 'H031', tags: ['tg'], text: `💣 THE BOMB HAS BEEN PLANTED 💣\n\nSolBomb is on Solana devnet.\nMainnet is coming.\nFounder Passes are limited.\n\nWhen this goes mainnet the ENTIRE Solana ecosystem will feel it.\n\nBe inside the blast radius — not watching from outside.\n\n👉 solbombpresale.netlify.app` },
+    { id: 'H032', tags: ['twitter'], text: `You know what's more powerful than a 1000x?\n\nBeing the infrastructure that powers 1000 different 1000xs.\n\nThat's SolBomb. 💣\n\nEvery fair launch on Solana. Every bonding curve.\nSolBomb in the background, making it happen.\n\nsolbomb.xyz\n\n#SolBomb #Solana #DeFi` },
+    { id: 'H033', tags: ['all'], text: `SolBomb has:\n💣 Zero insider allocation\n💣 On-chain bonding curve\n💣 Solana-native speed\n💣 100 Founder Pass NFTs\n💣 Active beta testing program\n\nWhat more do you need to see?\n\nsolbomb.xyz\n\n#SolBomb #Solana #WAGMI` },
+    { id: 'H034', tags: ['twitter'], text: `The Solana summer of 2025 will be remembered for one thing:\n\nThe rise of SolBomb. 💣\n\nScreenshot this.\n\nsolbomb.xyz\n\n#SolBomb #Solana #Prediction` },
+    { id: 'H035', tags: ['tg'], text: `🔥 SolBomb is recruiting 100 beta testers RIGHT NOW.\n\nNot 1000. Not 10000.\n\nExactly 100.\n\nIf you want to be one of them:\n👉 tally.so/r/D4W0pl\n\nFill the form. Get selected. Shape history. 💣` },
+    { id: 'H036', tags: ['twitter'], text: `Most launchpads charge you to launch and then dump on you.\n\nSolBomb charges a fair fee and lets math do the rest.\n\nNo team selling pressure.\nNo insider dumps.\nJust pure bonding curve energy. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #DeFi` },
+    { id: 'H037', tags: ['all'], text: `SOLBOMB SEASON IS NOT COMING.\n\nIT'S HERE. 💣💣💣\n\nPresale: solbombpresale.netlify.app\nBeta testing: tally.so/r/D4W0pl\nWebsite: solbomb.xyz\n\nPick your entry point. All roads lead to the same destination.\n\n#SolBomb #Solana` },
+    { id: 'H038', tags: ['twitter'], text: `What keeps me bullish on SolBomb?\n\nSimple: the mechanism doesn't need trust.\n\nYou don't have to trust the team.\nThe smart contract IS the team.\n\nTrustless fair launches. On Solana. Now. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #DeFi` },
+    { id: 'H039', tags: ['tg'], text: `⚡ SPEED CHECK:\n\nSolana: 65,000 TPS\nSolBomb launch time: 60 seconds\nTime to miss this opportunity: Right now if you don't act\n\nDon't be slow in a fast ecosystem.\n\n💣 solbombpresale.netlify.app\n\nMove fast. Win early.` },
+    { id: 'H040', tags: ['all'], text: `Not hyperbole:\n\nSolBomb is the protocol that makes fair crypto launches possible for everyone.\n\nNot just degens.\nNot just VCs.\n\nEVERYONE. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #Crypto #Web3` },
+  ],
+
+  educational: [
+    { id: 'E021', tags: ['twitter'], text: `Thread: Why bonding curves are superior to traditional token launches 🧵💣\n\n1/ Traditional launch: Fixed price at TGE, then price discovers DOWN\n2/ Bonding curve: Price discovers UP from zero\n3/ Early buyers rewarded mathematically, not by insider access\n4/ No one can pre-load bags before the curve starts\n\nThis is why SolBomb uses them.\n\nsolbomb.xyz` },
+    { id: 'E022', tags: ['all'], text: `The SolBomb whitepaper is live. 📄\n\nEverything you need to know:\n✅ Protocol architecture\n✅ Bonding curve math\n✅ Tokenomics\n✅ Roadmap\n✅ Security model\n\nRead it before you judge it.\n\n👉 solbombwhitepaper.netlify.app 💣\n\n#SolBomb #Solana #DeFi` },
+    { id: 'E023', tags: ['twitter'], text: `Why does SolBomb use Anchor framework? 🔍\n\nAnchor is Solana's most battle-tested smart contract framework.\n\n✅ Type-safe account validation\n✅ Automatic discriminator checks\n✅ Industry standard security patterns\n✅ Largest audit database on Solana\n\nWe don't cut corners on security. 💣\n\nsolbomb.xyz` },
+    { id: 'E024', tags: ['tg'], text: `📖 How token price works on SolBomb:\n\nStart price: Very low (almost free)\n\nAs people buy:\n→ Supply in pool decreases\n→ Price increases automatically\n→ No one can manipulate this\n\nAs people sell:\n→ Supply in pool increases\n→ Price decreases automatically\n→ Still no manipulation possible\n\nPure math. Pure fairness. 💣\n\nsolbomb.xyz` },
+    { id: 'E025', tags: ['twitter'], text: `What is a PDA in Solana and why does it matter for SolBomb? 🧠\n\nPDA = Program Derived Address\n\nIt's an account that ONLY the program can sign for.\n\nMeaning: no human can drain it.\nNot the team. Not a hacker (if coded right).\n\nSolBomb uses PDAs for every token's liquidity pool.\n\nYour funds. Protected by math. 💣` },
+    { id: 'E026', tags: ['all'], text: `The SolBomb presale structure explained:\n\n🥉 Bronze Tier — Entry level\n🥈 Silver Tier — Mid commitment\n🥇 Gold Tier — High conviction\n💎 Diamond Tier — Max supporter\n\n4 tiers. 7-day window. 50 SOL soft cap.\n\nTransparent. Structured. Fair.\n\n👉 solbombpresale.netlify.app 💣\n\n#SolBomb #Presale #Solana` },
+    { id: 'E027', tags: ['twitter'], text: `Why 1 billion BOMB token supply? 📊\n\n• Large supply = accessible price per token\n• Psychological advantage for retail (people like owning "millions")\n• 40% presale ensures wide distribution\n• 50% burn target = deflationary over time\n\nEvery number in SolBomb tokenomics has a reason.\n\nsolbombwhitepaper.netlify.app 💣` },
+    { id: 'E028', tags: ['tg'], text: `🎓 SolBomb Tokenomics Breakdown:\n\n💣 Total Supply: 1,000,000,000 BOMB\n\n📊 Allocation:\n40% — Presale\n30% — Liquidity\n20% — Founder\n10% — Marketing\n\n🔥 50% burn target\n💰 Staking: 30% revenue to stakers\n\nEvery token accounted for. No hidden supply.\n\nsolbombwhitepaper.netlify.app` },
+    { id: 'E029', tags: ['twitter'], text: `How staking works on SolBomb 💰\n\nStake BOMB tokens → earn from protocol revenue\n\nRevenue split:\n• 30% → Stakers\n• 50% → Treasury\n• 20% → Development\n\nTiered multipliers:\n1x → 2x → 3x based on stake size\n\nThe more you stake, the more you earn.\nThe more the platform grows, the more everyone earns.\n\nsolbomb.xyz 💣` },
+    { id: 'E030', tags: ['all'], text: `Why is SolBomb launching on devnet first?\n\nBecause we do things properly:\n\n✅ Full testing before real money is at risk\n✅ Community can test before mainnet\n✅ Beta testers shape the final product\n✅ Bugs caught early = safer mainnet\n\nThis is what responsible building looks like. 💣\n\n👉 tally.so/r/D4W0pl — Join beta testing\n\n#SolBomb #Solana` },
+    { id: 'E031', tags: ['twitter'], text: `The difference between SolBomb and a casino:\n\nCasino: House edge is hidden\nSolBomb: Every fee, every formula, publicly on-chain\n\nYou can verify EVERYTHING before putting in a single SOL.\n\nThat's what trustless means.\nThat's SolBomb. 💣\n\nsolbomb.xyz` },
+    { id: 'E032', tags: ['tg'], text: `📚 What happens to trading fees on SolBomb?\n\nEvery trade generates a small fee.\nThat fee goes to:\n\n💣 Treasury — funds protocol development\n💣 Stakers — rewards long-term holders\n💣 Future community rewards\n\nFees aren't extractive.\nThey're redistributive.\n\nThis is how sustainable protocols work.\n\nsolbomb.xyz` },
+    { id: 'E033', tags: ['twitter'], text: `Why the 50% burn target on BOMB token matters:\n\n1B supply today\n→ 500M burned over time\n→ Same demand + less supply = higher price\n\nDeflationary mechanics aren't magic.\nThey're math.\n\nAnd math always wins. 💣\n\nsolbombwhitepaper.netlify.app\n\n#SolBomb #Tokenomics` },
+    { id: 'E034', tags: ['all'], text: `Read the SolBomb whitepaper if you want to understand:\n\n📄 The full bonding curve formula\n📄 Security architecture\n📄 Token distribution logic\n📄 Roadmap to mainnet\n📄 Revenue model\n\nDon't invest in things you don't understand.\nUnderstand SolBomb first.\n\n👉 solbombwhitepaper.netlify.app 💣` },
+    { id: 'E035', tags: ['twitter'], text: `SolBomb vs Traditional Launchpad comparison:\n\n                    SolBomb    Traditional\nTeam allocation:      0%         10-20%\nPrice at launch:    Curve        Fixed\nLP control:        Protocol      Team\nRug possible:         No          Yes\nTransparency:      On-chain     "Trust us"\n\nNo contest. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #DeFi` },
+    { id: 'E036', tags: ['tg'], text: `🔐 SolBomb Security Model:\n\n✅ Anchor framework (Solana's most audited)\n✅ PDA-controlled liquidity (no human access)\n✅ On-chain price mechanism (no oracle needed)\n✅ Zero admin keys for fund withdrawal\n✅ Open source contracts\n\nSecurity isn't an afterthought at SolBomb.\nIt's the foundation.\n\nsolbomb.xyz 💣` },
+    { id: 'E037', tags: ['twitter'], text: `Thread: The economics of being early on SolBomb 🧵\n\nBonding curve math rewards early participants.\n\n• First 10% of tokens: lowest average price\n• Next 40%: moderate price\n• Last 50%: premium price\n\nThe curve doesn't lie.\nEarly = cheap. Late = expensive.\n\nBe early. 💣\n\nsolbomb.xyz` },
+    { id: 'E038', tags: ['all'], text: `SolBomb is built for:\n\n👤 Token creators who want fair launches\n👤 Traders who want equal footing\n👤 Communities who want no insider advantage\n👤 Developers who want open infrastructure\n\nIf you're any of these — SolBomb was built for you. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #DeFi` },
+    { id: 'E039', tags: ['twitter'], text: `Why Solana's speed matters for bonding curves:\n\nEvery buy/sell = on-chain transaction\n\nOn Ethereum: $5-50 gas, 15 second blocks\nOn Solana: $0.001 gas, 400ms blocks\n\nLow fees = more trades\nMore trades = more accurate price discovery\nMore accurate price = fairer market\n\nSolBomb on Solana = perfect pairing. 💣\n\nsolbomb.xyz` },
+    { id: 'E040', tags: ['tg'], text: `📋 SolBomb Beta Testing — What to expect:\n\nAs a beta tester you will:\n✅ Test the bonding curve mechanism\n✅ Launch test tokens on devnet\n✅ Report bugs and UX issues\n✅ Give feedback that shapes mainnet\n✅ Earn early supporter status\n\nThis is how great protocols are built.\n\nApply: tally.so/r/D4W0pl 💣` },
+  ],
+
+  meme: [
+    { id: 'M021', tags: ['twitter'], text: `my brain at 9am: be responsible\n\nmy brain at 9:01am after seeing SolBomb: BONDING CURVE GO BRRRRR 💣\n\n#SolBomb #Solana #CryptoMemes` },
+    { id: 'M022', tags: ['all'], text: `[regular launchpad]\nTeam: we have a fair launch!\nAlso team: *has 30% allocation*\nAlso team: *sold on day 1*\n\n[SolBomb]\nTeam: the smart contract is the team now\nSmart contract: x * y = k 💣\nRetail: wait this actually works\n\n#SolBomb #Solana #CryptoMemes` },
+    { id: 'M023', tags: ['twitter'], text: `rug pullers when they see SolBomb's bonding curve:\n\n👁️👄👁️\n\n"we can't drain this"\n\ncorrect. 💣\n\n#SolBomb #DeFi #CryptoMemes` },
+    { id: 'M024', tags: ['tg'], text: `the bonding curve at 3am when everyone is asleep:\n\nx * y = k\nx * y = k\nx * y = k\n\n"I don't sleep. I maintain fair pricing for all." 💣\n\nsolbomb.xyz` },
+    { id: 'M025', tags: ['twitter'], text: `me explaining SolBomb to my friends:\n\n"so the price goes up when people buy and down when they sell"\n\nfriends: "...that's just how markets work"\n\nme: "YEA BUT THIS ONE CAN'T RUG" 💣\n\n#SolBomb #Solana #CryptoMemes` },
+    { id: 'M026', tags: ['all'], text: `Crypto influencer: "NFA but this token will 1000x"\n\nSolBomb bonding curve: *mathematically prevents anyone from having insider advantage*\n\nme: I trust the math more than the influencer 💣\n\n#SolBomb #DYOR #Solana` },
+    { id: 'M027', tags: ['twitter'], text: `POV: You found SolBomb before your crypto friends\n\n*casually mentions it in the group chat*\n\n"bro what's the CA"\n"wen launch"\n"I'm in"\n\nYou: 😌💣\n\n#SolBomb #Solana #CryptoTwitter` },
+    { id: 'M028', tags: ['tg'], text: `Things that hit different at midnight:\n\n🌙 Lofi music\n🌙 Cup of coffee\n🌙 Watching SolBomb bonding curves move\n🌙 Checking if your beta tester application got accepted\n\nJust degen things 💣\n\ntally.so/r/D4W0pl` },
+    { id: 'M029', tags: ['twitter'], text: `my portfolio:\n📉📉📉📉📉\n\nmy belief in SolBomb's bonding curve math:\n📈📈📈📈📈\n\nI am at peace 💣\n\n#SolBomb #Solana #NotFinancialAdvice` },
+    { id: 'M030', tags: ['all'], text: `normal people: "I don't understand crypto"\n\nme: "okay so imagine the price is determined by a mathematical formula that no human can override"\n\nnormal people: "..."\n\nme: "it's on Solana and it's called SolBomb" 💣\n\n#SolBomb #Solana` },
+    { id: 'M031', tags: ['twitter'], text: `VCs trying to get a presale discount on SolBomb:\n\nSolBomb: lol no. bonding curve. same price for everyone.\n\nVCs: but we have connections\n\nSolBomb: x * y = k. I don't care. 💣\n\n#SolBomb #DeFi #CryptoMemes` },
+    { id: 'M032', tags: ['tg'], text: `When someone asks "is SolBomb legit":\n\nMe: *opens whitepaper*\nMe: *shows bonding curve formula*\nMe: *points to open source contracts*\nMe: *shows devnet deployment*\n\n"The math doesn't lie bro" 💣\n\nsolbombwhitepaper.netlify.app` },
+    { id: 'M033', tags: ['twitter'], text: `solbomb beta tester application process:\n\nstep 1: fill form\nstep 2: get selected\nstep 3: test platform\nstep 4: tell everyone you were there first\nstep 5: profit 💣\n\ntally.so/r/D4W0pl\n\n#SolBomb #Solana` },
+    { id: 'M034', tags: ['all'], text: `every memecoin launch ever:\n\n"team tokens locked for 1 year" 🔒\n*day 1: team unlocks somehow*\n\nSolBomb:\n"there are no team tokens to lock" 💣\n\nchef's kiss\n\n#SolBomb #Solana #CryptoMemes` },
+    { id: 'M035', tags: ['twitter'], text: `me reading about another rug pull:\n😤\n\nme remembering SolBomb exists:\n😮‍💨 the bonding curve protects us\n\n💣 #SolBomb #Solana #SafeCrypto` },
+    { id: 'M036', tags: ['tg'], text: `types of crypto people:\n\n😴 The sleeper — "I'll look into it later"\n😨 The FOMO-er — "why didn't I buy earlier"\n😎 The SolBomber — "I was there at 100 members" 💣\n\nWhich one are you?\n\nsolbomb.xyz` },
+    { id: 'M037', tags: ['twitter'], text: `honestly the most romantic thing in crypto:\n\na bonding curve that treats every wallet equally\n\n💣 x * y = k\n\nno favorites. no insiders. just math.\n\n#SolBomb #Solana #CryptoRomance` },
+    { id: 'M038', tags: ['all'], text: `SolBomb community vs everyone who doubted us:\n\nThem: "another memecoin launchpad, who cares"\n\nUs: *building in public, 100 Founder Passes, beta testers selected, whitepaper live*\n\nUs: 💣💣💣\n\nsolbomb.xyz` },
+    { id: 'M039', tags: ['twitter'], text: `nobody:\n\nme sending SolBomb link to literally everyone I know:\n\n"just look at it. JUST LOOK AT IT." 💣\n\ntally.so/r/D4W0pl\n\n#SolBomb #Solana #Degen` },
+    { id: 'M040', tags: ['tg'], text: `Stages of discovering SolBomb:\n\n1. "What is this?"\n2. "Oh it's a launchpad"\n3. "Wait it uses bonding curves?"\n4. "And there's no team allocation?"\n5. "AND only 100 Founder Passes??"\n6. *already filling the form* 💣\n\ntally.so/r/D4W0pl` },
+  ],
+
+  cta: [
+    { id: 'C021', tags: ['all'], text: `STOP SCROLLING. 🛑\n\nSolBomb beta testing is open.\n100 spots. First come, first selected.\n\nFill this form RIGHT NOW:\n👉 tally.so/r/D4W0pl\n\nYou've been early to nothing this cycle.\nChange that today. 💣\n\n#SolBomb #Solana #BetaTester` },
+    { id: 'C022', tags: ['twitter'], text: `Three links. Three actions. Do all three. 💣\n\n1️⃣ Learn: solbombwhitepaper.netlify.app\n2️⃣ Join presale: solbombpresale.netlify.app\n3️⃣ Beta test: tally.so/r/D4W0pl\n\nOne of these will change your trajectory.\nAll three will change it faster.\n\n#SolBomb #Solana` },
+    { id: 'C023', tags: ['tg'], text: `📢 CALLING ALL SOLANA DEGENS:\n\nSolBomb needs 100 beta testers.\n\nIf you:\n✅ Hold SOL\n✅ Love fair launches\n✅ Want to test before mainnet\n✅ Want early supporter status\n\nYou are exactly who we're looking for.\n\n👉 tally.so/r/D4W0pl\n\nForward this. Someone you know needs to see it. 💣` },
+    { id: 'C024', tags: ['twitter'], text: `The SolBomb presale won't last forever.\n\nFounder Passes won't last forever.\n\nBeta tester spots won't last forever.\n\nYour hesitation will outlast all of them if you let it.\n\nAct. Now. 💣\n\nsolbombpresale.netlify.app\n\n#SolBomb #Solana #Presale` },
+    { id: 'C025', tags: ['all'], text: `What you get when you join SolBomb beta:\n\n🔥 First access to the platform\n🔥 Direct line to the development team\n🔥 Shape the product before public launch\n🔥 Early supporter status — permanent\n🔥 Be part of history\n\nFill the form: tally.so/r/D4W0pl 💣\n\n#SolBomb #Solana #BetaTester` },
+    { id: 'C026', tags: ['twitter'], text: `If you believe in:\n\n→ Fair launches on Solana\n→ Community over insiders\n→ Math over promises\n\nThen you believe in SolBomb.\n\nProve it.\n\n💣 solbombpresale.netlify.app\n\n#SolBomb #Solana #DeFi` },
+    { id: 'C027', tags: ['tg'], text: `⏳ PRESALE IS LIVE:\n\n💣 solbombpresale.netlify.app\n\n4 tiers:\n🥉 Bronze\n🥈 Silver\n🥇 Gold\n💎 Diamond\n\n7-day window. 50 SOL soft cap. No hard cap.\n\nDon't read this and scroll past.\nClick the link. Make a decision. 💣` },
+    { id: 'C028', tags: ['twitter'], text: `You're either going to be someone who:\n\nA) Participated in the SolBomb presale\nB) Tested SolBomb as a beta tester\nC) Said "I knew about it" later\n\nA and B are still available.\nC is free but it'll cost you. 💣\n\nsolbombpresale.netlify.app\ntally.so/r/D4W0pl\n\n#SolBomb #Solana` },
+    { id: 'C029', tags: ['all'], text: `The SolBomb whitepaper answers every question you have.\n\nRead it first. Then decide. 📄\n\n👉 solbombwhitepaper.netlify.app\n\nIf you like what you see:\n→ Presale: solbombpresale.netlify.app\n→ Beta: tally.so/r/D4W0pl\n\nYour call. 💣\n\n#SolBomb #DYOR #Solana` },
+    { id: 'C030', tags: ['tg'], text: `🎯 ONE GOAL TODAY:\n\nGet 10 people to fill this form 👇\ntally.so/r/D4W0pl\n\nSolBomb beta testing — 100 spots.\nEvery person you bring = you proving you're a real community member.\n\nShare. Tag. Forward. 💣\n\nLet's fill those 100 spots TODAY.` },
+    { id: 'C031', tags: ['twitter'], text: `The easiest decision in Solana right now:\n\n→ 2 minutes\n→ 1 form\n→ Beta tester access\n\ntally.so/r/D4W0pl 💣\n\nDo it before someone else takes your spot.\n\n#SolBomb #Solana #BetaTester` },
+    { id: 'C032', tags: ['all'], text: `Follow the checklist 📋\n\n☐ Visit solbomb.xyz\n☐ Read whitepaper at solbombwhitepaper.netlify.app\n☐ Apply for beta: tally.so/r/D4W0pl\n☐ Join presale: solbombpresale.netlify.app\n☐ Follow @SolBombXYZ\n\nComplete the list. Don't leave steps undone. 💣\n\n#SolBomb #Solana` },
+    { id: 'C033', tags: ['twitter'], text: `Retweet this if you've already joined SolBomb 💣\n\nLet's see how big this community really is.\n\nsolbomb.xyz | tally.so/r/D4W0pl\n\n#SolBomb #Solana #Community` },
+    { id: 'C034', tags: ['tg'], text: `📣 FOR THE PEOPLE IN THE BACK:\n\nSolBomb beta testing = FREE to apply\nSolBomb whitepaper = FREE to read\nSolBomb website = FREE to explore\n\nYou have ZERO excuses to not at least look.\n\n👉 tally.so/r/D4W0pl\n👉 solbombwhitepaper.netlify.app\n👉 solbomb.xyz\n\nGO. NOW. 💣` },
+    { id: 'C035', tags: ['twitter'], text: `Tag the most degen person you know. 👇\n\nThey need to know about SolBomb.\nFair launch memecoin launchpad on Solana.\n100 Founder Passes.\nBeta testing open now.\n\n💣 tally.so/r/D4W0pl\n\n#SolBomb #Solana #Degen` },
+    { id: 'C036', tags: ['all'], text: `The numbers don't lie:\n\n💣 100 Founder Passes — ever\n💣 100 Beta testers — being selected now\n💣 1 fair launch protocol — SolBomb\n\nSmall numbers. Big opportunity.\n\nsolbombpresale.netlify.app\ntally.so/r/D4W0pl\n\n#SolBomb #Solana` },
+    { id: 'C037', tags: ['twitter'], text: `Hot take: The best investment in SolBomb right now isn't the token.\n\nIt's 2 minutes filling the beta tester form.\n\nRelationships with protocols early > tokens early.\n\n💣 tally.so/r/D4W0pl\n\n#SolBomb #Solana #Alpha` },
+    { id: 'C038', tags: ['tg'], text: `🚀 MOMENTUM CHECK:\n\nSolBomb has:\n✅ Live devnet deployment\n✅ Active beta testing program\n✅ Whitepaper published\n✅ Presale running\n✅ 100 Founder Passes\n✅ Growing community\n\nThis is not a concept. This is building.\n\nJoin: tally.so/r/D4W0pl 💣` },
+    { id: 'C039', tags: ['twitter'], text: `You found SolBomb.\nNow what?\n\n→ Apply for beta: tally.so/r/D4W0pl\n→ Read the paper: solbombwhitepaper.netlify.app\n→ Join presale: solbombpresale.netlify.app\n→ Follow: @SolBombXYZ\n\nThat's the entire onboarding. 💣\n\n#SolBomb #Solana` },
+    { id: 'C040', tags: ['all'], text: `Last post, then I'll leave you alone:\n\nSolBomb is building the fair launch standard on Solana.\n\nYou can be part of it from day one.\n\nOr you can watch from the sidelines.\n\nYour choice.\n\n💣 solbomb.xyz | tally.so/r/D4W0pl\n\n#SolBomb #Solana #WAGMI` },
+  ],
+
+  community: [
+    { id: 'CM021', tags: ['all'], text: `GM SOLBOMBERS. 💣🌅\n\nToday we grow.\nToday we build.\nToday we show the world what fair crypto looks like.\n\nShare one SolBomb post today. That's all.\n\nOne share. One new believer. Multiply.\n\nsolbomb.xyz\n\n#SolBomb #Solana #GM` },
+    { id: 'CM022', tags: ['twitter'], text: `The SolBomb community is 100% organic.\n\nNo paid shills.\nNo bot farms.\nNo fake engagement.\n\nReal people who genuinely believe fair launches should be the standard.\n\nThat's rare. That's powerful. That's us. 💣\n\n#SolBomb #Solana #Community` },
+    { id: 'CM023', tags: ['tg'], text: `Community poll 📊\n\nWhat are you most excited about in SolBomb?\n\n🔥 — Fair launch mechanism\n💣 — Founder Pass NFT\n🚀 — Mainnet launch\n📚 — Protocol growth\n\nDrop your emoji below! Let's see what the community wants most.` },
+    { id: 'CM024', tags: ['twitter'], text: `To the 100 people who will hold SolBomb Founder Passes:\n\nYou're not just investors.\nYou're not just users.\n\nYou're co-founders of the fair launch movement on Solana.\n\nWelcome to the founding team. 💣\n\nsolbombpresale.netlify.app\n\n#SolBomb #Solana #Founders` },
+    { id: 'CM025', tags: ['all'], text: `Something special about building in public:\n\nEvery person who joins early KNOWS they helped build it.\n\nThat pride is different.\nThat loyalty is unbreakable.\n\nSolBomb community members aren't users.\nThey're builders. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #BuidlSZN` },
+    { id: 'CM026', tags: ['tg'], text: `🙌 COMMUNITY CHALLENGE THIS WEEK:\n\n1️⃣ Share solbomb.xyz in one crypto group\n2️⃣ Tell one friend about the beta program\n3️⃣ Post one SolBomb tweet/post today\n\nIf 50 people do this, SolBomb grows by hundreds.\n\nPower of community. 💣\n\ntally.so/r/D4W0pl` },
+    { id: 'CM027', tags: ['twitter'], text: `Early communities in crypto that changed everything:\n\n• Early Solana validators\n• Early Uniswap LPs\n• Early Opensea users\n• Early pump.fun degens\n\nNow add: Early SolBomb community. 💣\n\nHistory is being written in real time.\nYou're writing it.\n\n#SolBomb #Solana` },
+    { id: 'CM028', tags: ['all'], text: `The thing about communities that last:\n\nThey're built on shared beliefs, not shared profits.\n\nSolBomb community believes:\n💣 Fair launches should be the norm\n💣 Math > trust\n💣 Community > insiders\n\nBelieve the same? You belong here.\n\nsolbomb.xyz\n\n#SolBomb #Solana` },
+    { id: 'CM029', tags: ['twitter'], text: `Every person who applies to be a SolBomb beta tester is:\n\n→ Choosing to build over speculate\n→ Choosing participation over observation\n→ Choosing early over safe\n\nThat's the energy this protocol deserves. 💣\n\ntally.so/r/D4W0pl\n\n#SolBomb #Solana #BetaTester` },
+    { id: 'CM030', tags: ['tg'], text: `💬 Question for the community:\n\nIf SolBomb becomes the #1 fair launch protocol on Solana —\n\nWhat would that mean for:\n→ The ecosystem?\n→ Retail investors?\n→ Memecoin culture?\n\nDrop your thoughts below. This is the conversation that matters. 💣` },
+    { id: 'CM031', tags: ['twitter'], text: `You know the community is real when:\n\n→ People share without being asked\n→ Members explain the protocol to newcomers\n→ Everyone's genuinely excited for each other's wins\n\nThat's SolBomb right now. 💣\n\nProud to be here.\n\n#SolBomb #Solana #Community` },
+    { id: 'CM032', tags: ['all'], text: `GN SolBombers. 🌙\n\nToday you were early to something real.\nTomorrow, we grow bigger.\n\nRest up. We've got a fair launch revolution to finish. 💣\n\nsolbomb.xyz\n\n#SolBomb #Solana #GN #Community` },
+    { id: 'CM033', tags: ['tg'], text: `📣 To every new member joining the SolBomb community:\n\nWelcome. You made the right call.\n\nHere's where to start:\n🌐 Website: solbomb.xyz\n📄 Whitepaper: solbombwhitepaper.netlify.app\n🧪 Beta program: tally.so/r/D4W0pl\n💰 Presale: solbombpresale.netlify.app\n\nWe're glad you're here. 💣` },
+    { id: 'CM034', tags: ['twitter'], text: `There's a difference between a community and a crowd.\n\nA crowd forms when price goes up.\nA community forms around shared purpose.\n\nSolBomb has a community. 💣\n\nFair launches. For everyone. Forever.\n\n#SolBomb #Solana #Community` },
+    { id: 'CM035', tags: ['all'], text: `If you've been with SolBomb since the beginning:\n\nThank you.\nSeriously.\n\nYou're not just a supporter.\nYou're proof that building right attracts the right people.\n\n💣 This one's for you.\n\nsolbomb.xyz\n\n#SolBomb #Solana #OG` },
+    { id: 'CM036', tags: ['twitter'], text: `Real talk:\n\nThe hardest part of building in crypto isn't the code.\nIt's finding people who genuinely believe in what you're building.\n\nSolBomb found them. 💣\n\nThe community is real. The belief is real. The protocol is real.\n\nsolbomb.xyz\n\n#SolBomb #Solana #BuidlSZN` },
+    { id: 'CM037', tags: ['tg'], text: `💣 COMMUNITY WINS THIS WEEK:\n\n✅ Beta testing program launched\n✅ 100 spots being filled\n✅ Whitepaper live\n✅ Presale running\n✅ Community growing daily\n\nEvery win is YOUR win.\nYou helped build this momentum.\n\nKeep going. 🚀\n\nsolbomb.xyz` },
+    { id: 'CM038', tags: ['twitter'], text: `The best communities in crypto share one thing:\n\nThey were built BEFORE the hype.\n\nSolBomb community is being built RIGHT NOW.\nBefore mainstream. Before listings. Before the masses.\n\nThis is what "early" actually looks like. 💣\n\n#SolBomb #Solana #Community` },
+    { id: 'CM039', tags: ['all'], text: `For every person who:\n\n💣 Shared SolBomb unprompted\n💣 Explained bonding curves to confused friends\n💣 Applied to be a beta tester\n💣 Supported the presale\n\nYou are SolBomb.\nNot the team. Not the protocol.\n\nYOU. 🙏\n\n#SolBomb #Solana #Community` },
+    { id: 'CM040', tags: ['tg'], text: `Final message before the week ends:\n\nSolBomb isn't just a launchpad.\nIt's a statement.\n\n"We refuse to let insiders win.\nWe refuse to accept unfair launches.\nWe build for everyone."\n\nIf that resonates — you're home. 💣\n\nsolbomb.xyz\ntally.so/r/D4W0pl` },
+  ]
+};
+
+// Merge Batch 2 into POSTS
+Object.keys(BATCH2).forEach(cat => {
+  if (POSTS[cat]) {
+    POSTS[cat] = POSTS[cat].concat(BATCH2[cat]);
+  }
+});
+
+// Re-render all grids
+Object.keys(BATCH2).forEach(cat => {
+  const grid = document.getElementById('grid-' + cat);
+  if (!grid) return;
+  BATCH2[cat].forEach(post => {
+    const charCount = post.text.length;
+    const tagHtml = post.tags.map(t => {
+      const cls = t === 'twitter' ? 'tag-twitter' : t === 'tg' ? 'tag-tg' : 'tag-all';
+      const label = t === 'twitter' ? '𝕏 Twitter' : t === 'tg' ? '✈️ Telegram' : '🌐 All';
+      return `<span class="tag ${cls}">${label}</span>`;
+    }).join('');
+    const card = document.createElement('div');
+    card.className = 'post-card';
+    card.innerHTML = `
+      <div class="post-meta">
+        <span class="post-num">#${post.id}</span>
+        <div class="post-tags">${tagHtml}</div>
+      </div>
+      <div class="post-content">${post.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div class="post-footer">
+        <span class="char-count">${charCount} chars</span>
+        <button class="copy-btn" onclick="copyPost(this, ${JSON.stringify(post.text).replace(/'/g,'&#39;')})">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+      </div>`;
+    grid.appendChild(card);
+  });
+  const countEl = document.getElementById('count-' + cat);
+  if (countEl) countEl.textContent = POSTS[cat].length;
+});
+
+updateTotalCount();
+
+// Update batch badge
+document.querySelector('.batch-badge').textContent = 'BATCH 1-2 COMPLETE — 200 POSTS';
+</script>
+
+<!-- ============================================================
+     BATCH 3 PASTE ZONE — PASTE NEXT BATCH BELOW THIS LINE
+     ============================================================ -->
+
+</body>
+</html>
+
      ============================================================ -->
 
 </body>
